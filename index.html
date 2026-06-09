@@ -1,13 +1,514 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Giudizio finale</title>
-  </head>
-  <body>
-    <h1>Giudizio finale</h1>
-    <img src="intestazione.png" style="max-width:100%;">
-    <img src="laterale.png" style="max-height:300px;">
-    <img src="piedipagina.png" style="max-width:100%;">
-  </body>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giudizio di ammissione</title>
+  <style>
+    :root {
+      --page-w: 1024px;
+      --page-h: 1448px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f2f2;
+      color: #111;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      padding: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .panel h1 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    .panel h2 {
+      font-size: 15px;
+      margin: 18px 0 8px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 58px;
+      resize: vertical;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .primary {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .secondary {
+      background: #e8eaed;
+      color: #111;
+    }
+
+    .preview-wrap {
+      width: min(100%, 1040px);
+      overflow: auto;
+    }
+
+    .page {
+      position: relative;
+      width: var(--page-w);
+      height: var(--page-h);
+      background-image: url("base.jpg");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-color: white;
+      box-shadow: 0 2px 14px rgba(0,0,0,.22);
+      transform-origin: top left;
+    }
+
+    .field {
+      position: absolute;
+      font-size: 18px;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .small-field {
+      font-size: 16px;
+    }
+
+    .tiny-field {
+      font-size: 14px;
+    }
+
+    .check {
+      position: absolute;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1;
+      transform: translate(-50%, -50%);
+    }
+
+    .multi {
+      white-space: normal;
+      line-height: 1.18;
+      font-size: 16px;
+    }
+
+    /* Coordinate campi principali */
+    #out_alunno { left: 171px; top: 248px; width: 370px; }
+    #out_classe { left: 607px; top: 248px; width: 165px; }
+    #out_sez { left: 832px; top: 248px; width: 80px; }
+
+    #out_ore_fsl { left: 395px; top: 733px; width: 70px; }
+    #out_contrari { left: 596px; top: 852px; width: 325px; }
+    #out_alunno_delibera { left: 210px; top: 892px; width: 720px; }
+    #out_credito { left: 730px; top: 930px; width: 55px; }
+    #out_disciplina { left: 592px; top: 998px; width: 255px; }
+    #out_motivazioni { left: 325px; top: 1024px; width: 600px; height: 45px; }
+    #out_data { left: 140px; top: 1135px; width: 260px; }
+    #out_firma { left: 560px; top: 1190px; width: 365px; text-align: center; }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+
+      body {
+        background: white;
+      }
+
+      .panel {
+        display: none !important;
+      }
+
+      .app {
+        display: block;
+        padding: 0;
+      }
+
+      .preview-wrap {
+        width: auto;
+        overflow: visible;
+      }
+
+      .page {
+        box-shadow: none;
+        width: 210mm;
+        height: 297mm;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .panel {
+        position: static;
+        max-height: none;
+      }
+      .page {
+        transform: scale(.75);
+      }
+      .preview-wrap {
+        height: 1100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <h1>Compilazione giudizio</h1>
+
+      <h2>Dati alunno</h2>
+      <label>Alunno/a
+        <input id="alunno" type="text" oninput="aggiorna()" />
+      </label>
+      <label>Classe
+        <input id="classe" type="text" oninput="aggiorna()" />
+      </label>
+      <label>Sezione
+        <input id="sez" type="text" oninput="aggiorna()" />
+      </label>
+
+      <h2>Frequenza e metodo</h2>
+      <label>Frequenza
+        <select id="frequenza" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>Irregolare</option>
+          <option>Poco regolare</option>
+          <option>Regolare</option>
+          <option>Assidua</option>
+        </select>
+      </label>
+
+      <label>Metodo di studio
+        <select id="metodo" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>Disorganizzato</option>
+          <option>Incostante</option>
+          <option>Diligente</option>
+          <option>Ordinato</option>
+          <option>Organizzato</option>
+        </select>
+      </label>
+
+      <h2>Competenze / Capacità</h2>
+      <div id="competenze"></div>
+
+      <h2>Profitto e prove</h2>
+      <label>Profitto nell’insieme delle discipline
+        <select id="profitto" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>Grav. Insuff.</option>
+          <option>Insuff.</option>
+          <option>Suff.</option>
+          <option>Discreto</option>
+          <option>Buono</option>
+          <option>Ottimo</option>
+        </select>
+      </label>
+
+      <label>Svolgimento prove SNV INVALSI
+        <select id="invalsi" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>SI</option>
+          <option>NO</option>
+        </select>
+      </label>
+
+      <label>Ore FSL
+        <input id="ore_fsl" type="text" oninput="aggiorna()" />
+      </label>
+
+      <h2>Delibera</h2>
+      <label>Tipo delibera
+        <select id="delibera" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>unanimità</option>
+          <option>maggioranza</option>
+        </select>
+      </label>
+
+      <label>Voto contrario di
+        <input id="contrari" type="text" oninput="aggiorna()" />
+      </label>
+
+      <label>Esito
+        <select id="esito" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>ammesso</option>
+          <option>non ammesso</option>
+        </select>
+      </label>
+
+      <label>Credito scolastico
+        <input id="credito" type="text" oninput="aggiorna()" />
+      </label>
+
+      <label>Votazione
+        <select id="votazione" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option>non inferiore</option>
+          <option>inferiore</option>
+        </select>
+      </label>
+
+      <label>Disciplina con votazione inferiore
+        <input id="disciplina" type="text" oninput="aggiorna()" />
+      </label>
+
+      <label>Motivazioni
+        <textarea id="motivazioni" oninput="aggiorna()"></textarea>
+      </label>
+
+      <label>Data
+        <input id="data" type="text" oninput="aggiorna()" />
+      </label>
+
+      <label>Coordinatore del Consiglio di Classe
+        <input id="firma" type="text" oninput="aggiorna()" />
+      </label>
+
+      <div class="buttons">
+        <button class="primary" onclick="window.print()">Stampa / salva PDF</button>
+        <button class="secondary" onclick="pulisci()">Pulisci</button>
+      </div>
+    </aside>
+
+    <main class="preview-wrap">
+      <section class="page" id="page">
+        <div id="out_alunno" class="field"></div>
+        <div id="out_classe" class="field"></div>
+        <div id="out_sez" class="field"></div>
+        <div id="out_ore_fsl" class="field small-field"></div>
+        <div id="out_contrari" class="field small-field"></div>
+        <div id="out_alunno_delibera" class="field"></div>
+        <div id="out_credito" class="field small-field"></div>
+        <div id="out_disciplina" class="field small-field"></div>
+        <div id="out_motivazioni" class="field multi"></div>
+        <div id="out_data" class="field small-field"></div>
+        <div id="out_firma" class="field small-field"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const livelli = ["Grav. Insuff.", "Insuff.", "Suff.", "Discreto", "Buono", "Ottimo"];
+
+    const indicatori = [
+      ["resp", "Senso di responsabilità"],
+      ["motiv", "Motivazione allo studio"],
+      ["analisi", "Capacità di analisi"],
+      ["sintesi", "Capacità di sintesi"],
+      ["gruppo", "Capacità di lavorare in gruppo"],
+      ["interesse", "Interesse per le attività svolte"],
+      ["autonomia", "Autonomia nello svolgimento dei compiti"]
+    ];
+
+    const coords = {
+      frequenza: {
+        "Irregolare": [296, 324],
+        "Poco regolare": [456, 324],
+        "Regolare": [614, 324],
+        "Assidua": [777, 324]
+      },
+      metodo: {
+        "Disorganizzato": [288, 397],
+        "Incostante": [420, 397],
+        "Diligente": [543, 397],
+        "Ordinato": [663, 397],
+        "Organizzato": [785, 397]
+      },
+      competenzeX: {
+        "Grav. Insuff.": 506,
+        "Insuff.": 612,
+        "Suff.": 682,
+        "Discreto": 765,
+        "Buono": 843,
+        "Ottimo": 919
+      },
+      competenzeY: {
+        resp: 478,
+        motiv: 501,
+        analisi: 523,
+        sintesi: 546,
+        gruppo: 569,
+        interesse: 591,
+        autonomia: 614
+      },
+      profitto: {
+        "Grav. Insuff.": [504, 677],
+        "Insuff.": [613, 677],
+        "Suff.": [683, 677],
+        "Discreto": [766, 677],
+        "Buono": [844, 677],
+        "Ottimo": [920, 677]
+      },
+      invalsi: {
+        "SI": [434, 712],
+        "NO": [487, 712]
+      },
+      delibera: {
+        "unanimità": [108, 852],
+        "maggioranza": [252, 852]
+      },
+      esito: {
+        "ammesso": [108, 933],
+        "non ammesso": [108, 1095]
+      },
+      votazione: {
+        "non inferiore": [160, 975],
+        "inferiore": [160, 999]
+      }
+    };
+
+    function creaSelectCompetenze() {
+      const box = document.getElementById("competenze");
+      indicatori.forEach(([id, label]) => {
+        const wrapper = document.createElement("label");
+        wrapper.textContent = label;
+        const select = document.createElement("select");
+        select.id = id;
+        select.onchange = aggiorna;
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "-- scegli --";
+        select.appendChild(empty);
+        livelli.forEach(l => {
+          const option = document.createElement("option");
+          option.value = l;
+          option.textContent = l;
+          select.appendChild(option);
+        });
+        wrapper.appendChild(select);
+        box.appendChild(wrapper);
+      });
+    }
+
+    function val(id) {
+      return document.getElementById(id).value || "";
+    }
+
+    function setText(id, text) {
+      document.getElementById(id).textContent = text;
+    }
+
+    function rimuoviCrocette() {
+      document.querySelectorAll(".check").forEach(el => el.remove());
+    }
+
+    function crocetta(x, y) {
+      const c = document.createElement("div");
+      c.className = "check";
+      c.textContent = "X";
+      c.style.left = x + "px";
+      c.style.top = y + "px";
+      document.getElementById("page").appendChild(c);
+    }
+
+    function aggiorna() {
+      setText("out_alunno", val("alunno"));
+      setText("out_classe", val("classe"));
+      setText("out_sez", val("sez"));
+      setText("out_ore_fsl", val("ore_fsl"));
+      setText("out_contrari", val("contrari"));
+      setText("out_alunno_delibera", val("alunno"));
+      setText("out_credito", val("credito"));
+      setText("out_disciplina", val("disciplina"));
+      setText("out_motivazioni", val("motivazioni"));
+      setText("out_data", val("data"));
+      setText("out_firma", val("firma"));
+
+      rimuoviCrocette();
+
+      const f = val("frequenza");
+      if (coords.frequenza[f]) crocetta(...coords.frequenza[f]);
+
+      const m = val("metodo");
+      if (coords.metodo[m]) crocetta(...coords.metodo[m]);
+
+      indicatori.forEach(([id]) => {
+        const livello = val(id);
+        const x = coords.competenzeX[livello];
+        const y = coords.competenzeY[id];
+        if (x && y) crocetta(x, y);
+      });
+
+      const p = val("profitto");
+      if (coords.profitto[p]) crocetta(...coords.profitto[p]);
+
+      const inv = val("invalsi");
+      if (coords.invalsi[inv]) crocetta(...coords.invalsi[inv]);
+
+      const del = val("delibera");
+      if (coords.delibera[del]) crocetta(...coords.delibera[del]);
+
+      const es = val("esito");
+      if (coords.esito[es]) crocetta(...coords.esito[es]);
+
+      const vot = val("votazione");
+      if (coords.votazione[vot]) crocetta(...coords.votazione[vot]);
+    }
+
+    function pulisci() {
+      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+      document.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
+      aggiorna();
+    }
+
+    creaSelectCompetenze();
+    aggiorna();
+  </script>
+</body>
 </html>
