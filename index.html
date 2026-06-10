@@ -32,6 +32,43 @@
     }
     .student-card textarea { min-height: 48px; resize: vertical; }
     .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    .livello-grav {
+      background: #d32f2f !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .livello-ins {
+      background: #ef5350 !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .livello-suff {
+      background: #fff176 !important;
+      color: #111111 !important;
+      font-weight: 700;
+    }
+
+    .livello-disc {
+      background: #aed581 !important;
+      color: #111111 !important;
+      font-weight: 700;
+    }
+
+    .livello-buono {
+      background: #66bb6a !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .livello-ottimo {
+      background: #2e7d32 !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
     .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
 
     .preview-area { display: none; padding: 0 16px 28px; }
@@ -84,6 +121,11 @@
     #out_firma { left: 560px; top: 1170px; width: 365px; text-align: center; }
 
     @media print {
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
       @page { size: A4 portrait; margin: 0; }
       body { background: white; }
       .topbar, .students-wrap, .preview-header { display: none !important; }
@@ -159,6 +201,43 @@
       esito: {"ammesso":[108,933],"non ammesso":[108,1095]},
       votazione: {"non inferiore":[170,975],"inferiore":[170,1000]}
     };
+
+
+    function coloraSelect(select) {
+      select.classList.remove(
+        "livello-grav",
+        "livello-ins",
+        "livello-suff",
+        "livello-disc",
+        "livello-buono",
+        "livello-ottimo"
+      );
+
+      switch (select.value) {
+        case "Grav. Insuff.":
+          select.classList.add("livello-grav");
+          break;
+        case "Insuff.":
+          select.classList.add("livello-ins");
+          break;
+        case "Suff.":
+          select.classList.add("livello-suff");
+          break;
+        case "Discreto":
+          select.classList.add("livello-disc");
+          break;
+        case "Buono":
+          select.classList.add("livello-buono");
+          break;
+        case "Ottimo":
+          select.classList.add("livello-ottimo");
+          break;
+      }
+    }
+
+    function aggiornaColoriSelect() {
+      document.querySelectorAll(".livello-select").forEach(coloraSelect);
+    }
 
     function optionList(options) {
       return options.map(o => `<option value="${o}">${o}</option>`).join("");
@@ -263,6 +342,7 @@
       for (let i = 1; i < NUM_STUDENTI; i++) {
         scriviStudente(i, primo);
       }
+      aggiornaColoriSelect();
 
       alert("Dati del primo alunno copiati sugli altri. Puoi modificare manualmente ogni colonna.");
     }
@@ -377,7 +457,14 @@
       caricaTutti();
     }
 
+    document.addEventListener("change", function(event) {
+      if (event.target.classList.contains("livello-select")) {
+        coloraSelect(event.target);
+      }
+    });
+
     inizializza();
+    aggiornaColoriSelect();
   </script>
 </body>
 </html>
