@@ -3,191 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Giudizio di ammissione</title>
+  <title>Giudizio di ammissione - compilazione multipla</title>
   <style>
-    :root {
-      --page-w: 1024px;
-      --page-h: 1448px;
-    }
+    :root { --page-w: 1024px; --page-h: 1448px; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f2f2f2; color: #111; }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f2f2f2;
-      color: #111;
+    .topbar {
+      position: sticky; top: 0; z-index: 10; background: white; border-bottom: 1px solid #ddd;
+      padding: 12px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
     }
-
-    .app {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 20px;
-      padding: 20px;
-      align-items: start;
+    .topbar h1 { font-size: 18px; margin: 0 14px 0 0; }
+    .topbar button, .student-card button {
+      border: 0; border-radius: 8px; padding: 9px 11px; cursor: pointer; font-weight: 700; font-size: 13px;
     }
+    .primary { background: #1a73e8; color: white; }
+    .secondary { background: #e8eaed; color: #111; }
+    .danger { background: #fce8e6; color: #a50e0e; }
 
-    .panel {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 18px;
-      position: sticky;
-      top: 20px;
-      max-height: calc(100vh - 40px);
-      overflow: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    .students-wrap { padding: 16px; overflow-x: auto; }
+    .students-grid { display: grid; grid-template-columns: repeat(20, 310px); gap: 14px; align-items: start; width: max-content; }
+    .student-card { background: white; border: 1px solid #ddd; border-radius: 10px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .student-card h2 { font-size: 15px; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid #ddd; }
+    .student-card label { display: block; font-size: 12px; font-weight: 700; margin-top: 8px; }
+    .student-card input, .student-card select, .student-card textarea {
+      width: 100%; box-sizing: border-box; margin-top: 3px; padding: 6px; font-size: 12px;
+      border: 1px solid #bbb; border-radius: 6px; background: white;
     }
+    .student-card textarea { min-height: 48px; resize: vertical; }
+    .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
 
-    .panel h1 {
-      font-size: 20px;
-      margin: 0 0 12px;
+    .preview-area { display: none; padding: 0 16px 28px; }
+    .preview-area.visible { display: block; }
+    .preview-header {
+      background: white; border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-bottom: 14px;
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0,0,0,.08);
     }
+    .preview-header strong { margin-right: auto; }
 
-    .panel h2 {
-      font-size: 15px;
-      margin: 18px 0 8px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 4px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 10px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      box-sizing: border-box;
-      margin-top: 4px;
-      padding: 8px;
-      font-size: 14px;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      background: white;
-    }
-
-    textarea {
-      min-height: 58px;
-      resize: vertical;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 8px;
-      padding: 10px 12px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .primary {
-      background: #1a73e8;
-      color: white;
-    }
-
-    .secondary {
-      background: #e8eaed;
-      color: #111;
-    }
-
-    .preview-wrap {
-      width: 100%;
-      overflow: auto;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding-bottom: 40px;
-    }
-
+    .preview-wrap { width: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 40px; }
     .page {
-      position: relative;
-      width: var(--page-w);
-      height: var(--page-h);
-      flex: 0 0 auto;
-      background-image: url("base.jpg");
-      background-size: 100% 100%;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-color: white;
-      box-shadow: 0 2px 14px rgba(0,0,0,.22);
+      position: relative; width: var(--page-w); height: var(--page-h); flex: 0 0 auto;
+      background-image: url("base.jpg"); background-size: 100% 100%; background-position: center center;
+      background-repeat: no-repeat; background-color: white; box-shadow: 0 2px 14px rgba(0,0,0,.22);
       transform-origin: top left;
     }
-
-
-    .base-img {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .field,
-    .check,
-    .suffix,
-    .strike-line {
-      z-index: 2;
-    }
-
-    .field {
-      position: absolute;
-      font-size: 18px;
-      line-height: 1.05;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .small-field {
-      font-size: 16px;
-    }
-
-    .tiny-field {
-      font-size: 14px;
-    }
-
+    .base-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .field, .check, .suffix, .strike-line { z-index: 2; }
+    .field { position: absolute; font-size: 18px; line-height: 1.05; white-space: nowrap; overflow: hidden; }
+    .small-field { font-size: 16px; }
+    .tiny-field { font-size: 14px; }
     .check {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 18px;
-      text-align: center;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+      position: absolute; width: 18px; height: 18px; font-size: 20px; font-weight: 700; line-height: 18px;
+      text-align: center; transform: translate(-50%, -50%); pointer-events: none;
     }
-
-    .multi {
-      white-space: normal;
-      line-height: 1.18;
-      font-size: 16px;
-    }
-
-
-    .suffix {
-      position: absolute;
-      font-size: 18px;
-      line-height: 1;
-      font-weight: normal;
-      white-space: nowrap;
-    }
-
+    .multi { white-space: normal; line-height: 1.18; font-size: 16px; }
+    .suffix { position: absolute; font-size: 18px; line-height: 1; font-weight: normal; white-space: nowrap; }
     .strike-line {
-      position: absolute;
-      height: 2px;
-      background: #000;
-      transform: rotate(-4deg);
-      transform-origin: left center;
-      display: none;
-      pointer-events: none;
+      position: absolute; height: 2px; background: #000; transform: rotate(-4deg); transform-origin: left center;
+      display: none; pointer-events: none;
     }
 
     #out_sesso_alunno { left: 145px; top: 245px; width: 25px; }
@@ -199,7 +74,6 @@
     #out_alunno { left: 171px; top: 245px; width: 370px; }
     #out_classe { left: 608px; top: 245px; width: 160px; }
     #out_sez { left: 833px; top: 245px; width: 75px; }
-
     #out_ore_fsl { left: 395px; top: 726px; width: 70px; }
     #out_contrari { left: 586px; top: 840px; width: 325px; }
     #out_alunno_delibera { left: 209px; top: 882px; width: 715px; }
@@ -210,194 +84,38 @@
     #out_firma { left: 560px; top: 1170px; width: 365px; text-align: center; }
 
     @media print {
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
-
-      body {
-        background: white;
-      }
-
-      .panel {
-        display: none !important;
-      }
-
-      .app {
-        display: block;
-        padding: 0;
-      }
-
-      .preview-wrap {
-        width: 210mm;
-        height: 297mm;
-        overflow: hidden;
-        display: block;
-        padding: 0;
-      }
-
-      .page {
-        box-shadow: none;
-        width: 1024px;
-        height: 1448px;
-        transform: scale(0.7751);
-        transform-origin: top left;
-      }
+      @page { size: A4 portrait; margin: 0; }
+      body { background: white; }
+      .topbar, .students-wrap, .preview-header { display: none !important; }
+      .preview-area { display: block !important; padding: 0; }
+      .preview-wrap { width: 210mm; height: 297mm; overflow: hidden; display: block; padding: 0; }
+      .page { box-shadow: none; width: 1024px; height: 1448px; transform: scale(0.7751); transform-origin: top left; }
     }
 
     @media (max-width: 900px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
-      .panel {
-        position: static;
-        max-height: none;
-      }
-      .page {
-        transform: scale(.75);
-      }
-      .preview-wrap {
-        height: 1100px;
-      }
+      .students-grid { grid-template-columns: repeat(20, 290px); }
+      .page { transform: scale(.75); }
+      .preview-wrap { justify-content: flex-start; height: 1100px; }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="panel">
-      <h1>Compilazione giudizio</h1>
+  <div class="topbar">
+    <h1>Compilazione multipla giudizi</h1>
+    <button class="secondary" onclick="copiaPrimoSuTutti()">Copia primo alunno sugli altri</button>
+    <button class="secondary" onclick="salvaTutti()">Salva tutti</button>
+    <button class="secondary" onclick="caricaTutti()">Ricarica salvati</button>
+    <button class="danger" onclick="cancellaArchivio()">Cancella salvataggi</button>
+  </div>
 
-      <h2>Dati alunno</h2>
-      <label>Alunno/a
-        <input id="alunno" type="text" oninput="aggiorna()" />
-      </label>
+  <div class="students-wrap"><div class="students-grid" id="studentsGrid"></div></div>
 
-      <label>Sesso grammaticale
-        <select id="sesso" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option value="o">Maschile: o</option>
-          <option value="a">Femminile: a</option>
-        </select>
-      </label>
-      <label>Classe
-        <input id="classe" type="text" oninput="aggiorna()" />
-      </label>
-      <label>Sezione
-        <input id="sez" type="text" oninput="aggiorna()" />
-      </label>
-
-      <h2>Frequenza e metodo</h2>
-      <label>Frequenza
-        <select id="frequenza" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>Irregolare</option>
-          <option>Poco regolare</option>
-          <option>Regolare</option>
-          <option>Assidua</option>
-        </select>
-      </label>
-
-      <label>Metodo di studio
-        <select id="metodo" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>Disorganizzato</option>
-          <option>Incostante</option>
-          <option>Diligente</option>
-          <option>Ordinato</option>
-          <option>Organizzato</option>
-        </select>
-      </label>
-
-      <h2>Competenze / Capacità</h2>
-      <div id="competenze"></div>
-
-      <h2>Profitto e prove</h2>
-      <label>Profitto nell’insieme delle discipline
-        <select id="profitto" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>Grav. Insuff.</option>
-          <option>Insuff.</option>
-          <option>Suff.</option>
-          <option>Discreto</option>
-          <option>Buono</option>
-          <option>Ottimo</option>
-        </select>
-      </label>
-
-      <label>Svolgimento prove SNV INVALSI
-        <select id="invalsi" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>SI</option>
-          <option>NO</option>
-        </select>
-      </label>
-
-      <label>FSL
-        <select id="fsl_applica" onchange="aggiorna()">
-          <option value="si">Indicare numero ore</option>
-          <option value="no">Annulla campo con linea</option>
-        </select>
-      </label>
-
-      <label>Ore FSL
-        <input id="ore_fsl" type="text" oninput="aggiorna()" />
-      </label>
-
-      <h2>Delibera</h2>
-      <label>Tipo delibera
-        <select id="delibera" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>unanimità</option>
-          <option>maggioranza</option>
-        </select>
-      </label>
-
-      <label>Voto contrario di
-        <input id="contrari" type="text" oninput="aggiorna()" />
-      </label>
-
-      <label>Esito
-        <select id="esito" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>ammesso</option>
-          <option>non ammesso</option>
-        </select>
-      </label>
-
-      <label>Credito scolastico
-        <input id="credito" type="text" oninput="aggiorna()" />
-      </label>
-
-      <label>Votazione
-        <select id="votazione" onchange="aggiorna()">
-          <option value="">-- scegli --</option>
-          <option>non inferiore</option>
-          <option>inferiore</option>
-        </select>
-      </label>
-
-      <label>Disciplina con votazione inferiore
-        <input id="disciplina" type="text" oninput="aggiorna()" />
-      </label>
-
-      <label>Motivazioni
-        <textarea id="motivazioni" oninput="aggiorna()"></textarea>
-      </label>
-
-      <label>Data
-        <input id="data" type="text" oninput="aggiorna()" />
-      </label>
-
-      <label>Coordinatore del Consiglio di Classe
-        <input id="firma" type="text" oninput="aggiorna()" />
-      </label>
-
-      <div class="buttons">
-        <button class="primary" onclick="window.print()">Stampa / salva PDF</button>
-        <button class="secondary" onclick="pulisci()">Pulisci</button>
-      </div>
-    </aside>
-
+  <section class="preview-area" id="previewArea">
+    <div class="preview-header">
+      <strong id="previewTitle">Anteprima</strong>
+      <button class="primary" onclick="window.print()">Stampa / salva PDF</button>
+      <button class="secondary" onclick="chiudiAnteprima()">Chiudi anteprima</button>
+    </div>
     <main class="preview-wrap">
       <section class="page" id="page">
         <img src="base.jpg" class="base-img" alt="">
@@ -418,112 +136,159 @@
         <div id="out_firma" class="field small-field"></div>
       </section>
     </main>
-  </div>
+  </section>
 
   <script>
+    const NUM_STUDENTI = 20;
     const livelli = ["Grav. Insuff.", "Insuff.", "Suff.", "Discreto", "Buono", "Ottimo"];
-
     const indicatori = [
-      ["resp", "Senso di responsabilità"],
-      ["motiv", "Motivazione allo studio"],
-      ["analisi", "Capacità di analisi"],
-      ["sintesi", "Capacità di sintesi"],
-      ["gruppo", "Capacità di lavorare in gruppo"],
-      ["interesse", "Interesse per le attività svolte"],
+      ["resp", "Senso di responsabilità"], ["motiv", "Motivazione allo studio"],
+      ["analisi", "Capacità di analisi"], ["sintesi", "Capacità di sintesi"],
+      ["gruppo", "Capacità di lavorare in gruppo"], ["interesse", "Interesse per le attività svolte"],
       ["autonomia", "Autonomia nello svolgimento dei compiti"]
     ];
 
     const coords = {
-      frequenza: {
-        "Irregolare": [296, 326],
-        "Poco regolare": [456, 326],
-        "Regolare": [614, 326],
-        "Assidua": [777, 326]
-      },
-      metodo: {
-        "Disorganizzato": [288, 393],
-        "Incostante": [420, 393],
-        "Diligente": [543, 393],
-        "Ordinato": [663, 393],
-        "Organizzato": [785, 393]
-      },
-      competenzeX: {
-        "Grav. Insuff.": 506,
-        "Insuff.": 596,
-        "Suff.": 667,
-        "Discreto": 745,
-        "Buono": 833,
-        "Ottimo": 907
-      },
-      competenzeY: {
-        resp: 467,
-        motiv: 490,
-        analisi: 513,
-        sintesi: 536,
-        gruppo: 559,
-        interesse: 582,
-        autonomia: 604
-      },
-      profitto: {
-        "Grav. Insuff.": [495, 668],
-        "Insuff.": [597, 666],
-        "Suff.": [669, 666],
-        "Discreto": [745, 666],
-        "Buono": [829, 666],
-        "Ottimo": [906, 666]
-      },
-      invalsi: {
-        "SI": [414, 711],
-        "NO": [475, 711]
-      },
-      delibera: {
-        "unanimità": [108, 852],
-        "maggioranza": [261, 852]
-      },
-      esito: {
-        "ammesso": [108, 933],
-        "non ammesso": [108, 1095]
-      },
-      votazione: {
-        "non inferiore": [170, 975],
-        "inferiore": [170, 1000]
-      }
+      frequenza: {"Irregolare":[296,326],"Poco regolare":[456,326],"Regolare":[614,326],"Assidua":[777,326]},
+      metodo: {"Disorganizzato":[288,393],"Incostante":[420,393],"Diligente":[543,393],"Ordinato":[663,393],"Organizzato":[785,393]},
+      competenzeX: {"Grav. Insuff.":506,"Insuff.":596,"Suff.":667,"Discreto":745,"Buono":833,"Ottimo":907},
+      competenzeY: {resp:467,motiv:490,analisi:513,sintesi:536,gruppo:559,interesse:582,autonomia:604},
+      profitto: {"Grav. Insuff.":[495,668],"Insuff.":[597,666],"Suff.":[669,666],"Discreto":[745,666],"Buono":[829,666],"Ottimo":[906,666]},
+      invalsi: {"SI":[414,711],"NO":[475,711]},
+      delibera: {"unanimità":[108,852],"maggioranza":[261,852]},
+      esito: {"ammesso":[108,933],"non ammesso":[108,1095]},
+      votazione: {"non inferiore":[170,975],"inferiore":[170,1000]}
     };
 
-    function creaSelectCompetenze() {
-      const box = document.getElementById("competenze");
-      indicatori.forEach(([id, label]) => {
-        const wrapper = document.createElement("label");
-        wrapper.textContent = label;
-        const select = document.createElement("select");
-        select.id = id;
-        select.onchange = aggiorna;
-        const empty = document.createElement("option");
-        empty.value = "";
-        empty.textContent = "-- scegli --";
-        select.appendChild(empty);
-        livelli.forEach(l => {
-          const option = document.createElement("option");
-          option.value = l;
-          option.textContent = l;
-          select.appendChild(option);
-        });
-        wrapper.appendChild(select);
-        box.appendChild(wrapper);
+    function optionList(options) {
+      return options.map(o => `<option value="${o}">${o}</option>`).join("");
+    }
+
+    function campoId(i, nome) { return `s${i}_${nome}`; }
+
+    function creaCard(i) {
+      const card = document.createElement("section");
+      card.className = "student-card";
+      card.innerHTML = `
+        <h2>Alunno ${i + 1}</h2>
+        <label>Alunno/a <input id="${campoId(i,"alunno")}" type="text"></label>
+        <label>Sesso grammaticale
+          <select id="${campoId(i,"sesso")}">
+            <option value="">-- scegli --</option><option value="o">Maschile: o</option><option value="a">Femminile: a</option>
+          </select>
+        </label>
+        <div class="mini-grid">
+          <label>Classe <input id="${campoId(i,"classe")}" type="text"></label>
+          <label>Sezione <input id="${campoId(i,"sez")}" type="text"></label>
+        </div>
+        <label>Frequenza
+          <select id="${campoId(i,"frequenza")}"><option value="">-- scegli --</option>${optionList(["Irregolare","Poco regolare","Regolare","Assidua"])}</select>
+        </label>
+        <label>Metodo di studio
+          <select id="${campoId(i,"metodo")}"><option value="">-- scegli --</option>${optionList(["Disorganizzato","Incostante","Diligente","Ordinato","Organizzato"])}</select>
+        </label>
+        ${indicatori.map(([id,label]) => `
+          <label>${label}
+            <select id="${campoId(i,id)}"><option value="">-- scegli --</option>${optionList(livelli)}</select>
+          </label>`).join("")}
+        <label>Profitto
+          <select id="${campoId(i,"profitto")}"><option value="">-- scegli --</option>${optionList(livelli)}</select>
+        </label>
+        <label>INVALSI
+          <select id="${campoId(i,"invalsi")}"><option value="">-- scegli --</option><option>SI</option><option>NO</option></select>
+        </label>
+        <label>FSL
+          <select id="${campoId(i,"fsl_applica")}"><option value="si">Indicare numero ore</option><option value="no">Annulla campo con linea</option></select>
+        </label>
+        <label>Ore FSL <input id="${campoId(i,"ore_fsl")}" type="text"></label>
+        <label>Tipo delibera
+          <select id="${campoId(i,"delibera")}"><option value="">-- scegli --</option><option>unanimità</option><option>maggioranza</option></select>
+        </label>
+        <label>Voto contrario di <input id="${campoId(i,"contrari")}" type="text"></label>
+        <label>Esito
+          <select id="${campoId(i,"esito")}"><option value="">-- scegli --</option><option>ammesso</option><option>non ammesso</option></select>
+        </label>
+        <label>Credito scolastico <input id="${campoId(i,"credito")}" type="text"></label>
+        <label>Votazione
+          <select id="${campoId(i,"votazione")}"><option value="">-- scegli --</option><option value="non inferiore">non inferiore</option><option value="inferiore">inferiore</option></select>
+        </label>
+        <label>Disciplina con votazione inferiore <input id="${campoId(i,"disciplina")}" type="text"></label>
+        <label>Motivazioni <textarea id="${campoId(i,"motivazioni")}"></textarea></label>
+        <label>Data <input id="${campoId(i,"data")}" type="text"></label>
+        <label>Coordinatore <input id="${campoId(i,"firma")}" type="text"></label>
+        <div class="buttons">
+          <button class="secondary" onclick="salvaStudente(${i})">Salva</button>
+          <button class="primary" onclick="mostraAnteprima(${i})">Vedi anteprima</button>
+        </div>
+      `;
+      return card;
+    }
+
+    function campi() {
+      return ["alunno","sesso","classe","sez","frequenza","metodo",...indicatori.map(([id])=>id),
+        "profitto","invalsi","fsl_applica","ore_fsl","delibera","contrari","esito","credito",
+        "votazione","disciplina","motivazioni","data","firma"];
+    }
+
+    function leggiStudente(i) {
+      const dati = {};
+      campi().forEach(nome => {
+        const el = document.getElementById(campoId(i,nome));
+        dati[nome] = el ? el.value : "";
+      });
+      return dati;
+    }
+
+    function scriviStudente(i, dati) {
+      campi().forEach(nome => {
+        const el = document.getElementById(campoId(i,nome));
+        if (el && dati[nome] !== undefined) el.value = dati[nome];
       });
     }
 
-    function val(id) {
-      return document.getElementById(id).value || "";
+    function salvaStudente(i) {
+      const archivio = JSON.parse(localStorage.getItem("giudizi_multipli") || "{}");
+      archivio[i] = leggiStudente(i);
+      localStorage.setItem("giudizi_multipli", JSON.stringify(archivio));
+      alert(`Alunno ${i + 1} salvato nel browser.`);
     }
 
-    function setText(id, text) {
-      document.getElementById(id).textContent = text;
+    function copiaPrimoSuTutti() {
+      const primo = leggiStudente(0);
+
+      if (!confirm("Vuoi copiare tutti i dati del primo alunno sugli altri 19? Dopo potrai comunque modificarli manualmente.")) {
+        return;
+      }
+
+      for (let i = 1; i < NUM_STUDENTI; i++) {
+        scriviStudente(i, primo);
+      }
+
+      alert("Dati del primo alunno copiati sugli altri. Puoi modificare manualmente ogni colonna.");
     }
 
-    function rimuoviCrocette() {
-      document.querySelectorAll(".check").forEach(el => el.remove());
+    function salvaTutti() {
+      const archivio = {};
+      for (let i = 0; i < NUM_STUDENTI; i++) archivio[i] = leggiStudente(i);
+      localStorage.setItem("giudizi_multipli", JSON.stringify(archivio));
+      alert("Tutti gli alunni sono stati salvati nel browser.");
     }
+
+    function caricaTutti() {
+      const archivio = JSON.parse(localStorage.getItem("giudizi_multipli") || "{}");
+      Object.keys(archivio).forEach(i => scriviStudente(Number(i), archivio[i]));
+    }
+
+    function cancellaArchivio() {
+      if (confirm("Vuoi cancellare tutti i dati salvati nel browser?")) {
+        localStorage.removeItem("giudizi_multipli");
+        alert("Salvataggi cancellati.");
+      }
+    }
+
+    function valDati(dati, nome) { return dati[nome] || ""; }
+    function setText(id, text) { document.getElementById(id).textContent = text || ""; }
+    function rimuoviCrocette() { document.querySelectorAll(".check").forEach(el => el.remove()); }
 
     function crocetta(x, y) {
       const c = document.createElement("div");
@@ -534,12 +299,23 @@
       document.getElementById("page").appendChild(c);
     }
 
-    function aggiorna() {
-      const sesso = val("sesso");
-      const esitoScelto = val("esito");
+    function mostraAnteprima(i) {
+      const dati = leggiStudente(i);
+      document.getElementById("previewArea").classList.add("visible");
+      document.getElementById("previewTitle").textContent = `Anteprima alunno ${i + 1}${dati.alunno ? " - " + dati.alunno : ""}`;
+      compilaAnteprima(dati);
+      document.getElementById("previewArea").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function chiudiAnteprima() {
+      document.getElementById("previewArea").classList.remove("visible");
+    }
+
+    function compilaAnteprima(dati) {
+      const sesso = valDati(dati,"sesso");
+      const esitoScelto = valDati(dati,"esito");
 
       setText("out_sesso_alunno", sesso);
-
       if (esitoScelto === "ammesso") {
         setText("out_sesso_ammesso", sesso);
         setText("out_sesso_nonammesso", "");
@@ -551,63 +327,57 @@
         setText("out_sesso_nonammesso", "");
       }
 
-      setText("out_alunno", val("alunno"));
-      setText("out_classe", val("classe"));
-      setText("out_sez", val("sez"));
-      if (val("fsl_applica") === "no") {
+      setText("out_alunno", valDati(dati,"alunno"));
+      setText("out_classe", valDati(dati,"classe"));
+      setText("out_sez", valDati(dati,"sez"));
+      if (valDati(dati,"fsl_applica") === "no") {
         setText("out_ore_fsl", "");
         document.getElementById("fsl_line").style.display = "block";
       } else {
-        setText("out_ore_fsl", val("ore_fsl"));
+        setText("out_ore_fsl", valDati(dati,"ore_fsl"));
         document.getElementById("fsl_line").style.display = "none";
       }
-      setText("out_contrari", val("contrari"));
-      setText("out_alunno_delibera", val("alunno"));
-      setText("out_credito", val("credito"));
-      setText("out_disciplina", val("disciplina"));
-      setText("out_motivazioni", val("motivazioni"));
-      setText("out_data", val("data"));
-      setText("out_firma", val("firma"));
+      setText("out_contrari", valDati(dati,"contrari"));
+      setText("out_alunno_delibera", valDati(dati,"alunno"));
+      setText("out_credito", valDati(dati,"credito"));
+      setText("out_disciplina", valDati(dati,"disciplina"));
+      setText("out_motivazioni", valDati(dati,"motivazioni"));
+      setText("out_data", valDati(dati,"data"));
+      setText("out_firma", valDati(dati,"firma"));
 
       rimuoviCrocette();
 
-      const f = val("frequenza");
+      const f = valDati(dati,"frequenza");
       if (coords.frequenza[f]) crocetta(...coords.frequenza[f]);
-
-      const m = val("metodo");
+      const m = valDati(dati,"metodo");
       if (coords.metodo[m]) crocetta(...coords.metodo[m]);
 
       indicatori.forEach(([id]) => {
-        const livello = val(id);
+        const livello = valDati(dati,id);
         const x = coords.competenzeX[livello];
         const y = coords.competenzeY[id];
-        if (x && y) crocetta(x, y);
+        if (x && y) crocetta(x,y);
       });
 
-      const p = val("profitto");
+      const p = valDati(dati,"profitto");
       if (coords.profitto[p]) crocetta(...coords.profitto[p]);
-
-      const inv = val("invalsi");
+      const inv = valDati(dati,"invalsi");
       if (coords.invalsi[inv]) crocetta(...coords.invalsi[inv]);
-
-      const del = val("delibera");
+      const del = valDati(dati,"delibera");
       if (coords.delibera[del]) crocetta(...coords.delibera[del]);
-
-      const es = val("esito");
+      const es = valDati(dati,"esito");
       if (coords.esito[es]) crocetta(...coords.esito[es]);
-
-      const vot = val("votazione");
+      const vot = valDati(dati,"votazione");
       if (coords.votazione[vot]) crocetta(...coords.votazione[vot]);
     }
 
-    function pulisci() {
-      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
-      document.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
-      aggiorna();
+    function inizializza() {
+      const grid = document.getElementById("studentsGrid");
+      for (let i = 0; i < NUM_STUDENTI; i++) grid.appendChild(creaCard(i));
+      caricaTutti();
     }
 
-    creaSelectCompetenze();
-    aggiorna();
+    inizializza();
   </script>
 </body>
 </html>
