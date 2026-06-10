@@ -97,16 +97,22 @@
     }
 
     .preview-wrap {
-      width: min(100%, 1040px);
+      width: 100%;
       overflow: auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-bottom: 40px;
     }
 
     .page {
       position: relative;
       width: var(--page-w);
       height: var(--page-h);
+      flex: 0 0 auto;
       background-image: url("base.jpg");
       background-size: 100% 100%;
+      background-position: center center;
       background-repeat: no-repeat;
       background-color: white;
       box-shadow: 0 2px 14px rgba(0,0,0,.22);
@@ -131,10 +137,14 @@
 
     .check {
       position: absolute;
-      font-size: 19px;
+      width: 18px;
+      height: 18px;
+      font-size: 20px;
       font-weight: 700;
-      line-height: 1;
+      line-height: 18px;
+      text-align: center;
       transform: translate(-50%, -50%);
+      pointer-events: none;
     }
 
     .multi {
@@ -144,14 +154,14 @@
     }
 
     /* Coordinate campi principali */
-    #out_alunno { left: 171px; top: 248px; width: 370px; }
-    #out_classe { left: 607px; top: 248px; width: 165px; }
-    #out_sez { left: 832px; top: 248px; width: 80px; }
+    #out_alunno { left: 171px; top: 252px; width: 370px; }
+    #out_classe { left: 608px; top: 252px; width: 160px; }
+    #out_sez { left: 833px; top: 252px; width: 75px; }
 
     #out_ore_fsl { left: 395px; top: 733px; width: 70px; }
     #out_contrari { left: 596px; top: 852px; width: 325px; }
-    #out_alunno_delibera { left: 210px; top: 892px; width: 720px; }
-    #out_credito { left: 730px; top: 930px; width: 55px; }
+    #out_alunno_delibera { left: 209px; top: 894px; width: 715px; }
+    #out_credito { left: 731px; top: 933px; width: 50px; }
     #out_disciplina { left: 592px; top: 998px; width: 255px; }
     #out_motivazioni { left: 325px; top: 1024px; width: 600px; height: 45px; }
     #out_data { left: 140px; top: 1135px; width: 260px; }
@@ -358,10 +368,10 @@
 
     const coords = {
       frequenza: {
-        "Irregolare": [296, 324],
-        "Poco regolare": [456, 324],
-        "Regolare": [614, 324],
-        "Assidua": [777, 324]
+        "Irregolare": [296, 326],
+        "Poco regolare": [456, 326],
+        "Regolare": [614, 326],
+        "Assidua": [777, 326]
       },
       metodo: {
         "Disorganizzato": [288, 397],
@@ -379,25 +389,25 @@
         "Ottimo": 919
       },
       competenzeY: {
-        resp: 478,
-        motiv: 501,
-        analisi: 523,
-        sintesi: 546,
-        gruppo: 569,
-        interesse: 591,
-        autonomia: 614
+        resp: 479,
+        motiv: 502,
+        analisi: 525,
+        sintesi: 548,
+        gruppo: 571,
+        interesse: 594,
+        autonomia: 616
       },
       profitto: {
-        "Grav. Insuff.": [504, 677],
-        "Insuff.": [613, 677],
-        "Suff.": [683, 677],
-        "Discreto": [766, 677],
-        "Buono": [844, 677],
-        "Ottimo": [920, 677]
+        "Grav. Insuff.": [507, 678],
+        "Insuff.": [612, 678],
+        "Suff.": [683, 678],
+        "Discreto": [766, 678],
+        "Buono": [844, 678],
+        "Ottimo": [919, 678]
       },
       invalsi: {
-        "SI": [434, 712],
-        "NO": [487, 712]
+        "SI": [431, 711],
+        "NO": [489, 711]
       },
       delibera: {
         "unanimità": [108, 852],
