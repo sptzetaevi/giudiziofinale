@@ -512,9 +512,20 @@
 
     function aggiorna() {
       const sesso = val("sesso");
+      const esitoScelto = val("esito");
+
       setText("out_sesso_alunno", sesso);
-      setText("out_sesso_ammesso", sesso);
-      setText("out_sesso_nonammesso", sesso);
+
+      if (esitoScelto === "ammesso") {
+        setText("out_sesso_ammesso", sesso);
+        setText("out_sesso_nonammesso", "");
+      } else if (esitoScelto === "non ammesso") {
+        setText("out_sesso_ammesso", "");
+        setText("out_sesso_nonammesso", sesso);
+      } else {
+        setText("out_sesso_ammesso", "");
+        setText("out_sesso_nonammesso", "");
+      }
 
       setText("out_alunno", val("alunno"));
       setText("out_classe", val("classe"));
