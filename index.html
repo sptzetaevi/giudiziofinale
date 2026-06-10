@@ -119,6 +119,24 @@
       transform-origin: top left;
     }
 
+
+    .base-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .field,
+    .check,
+    .suffix,
+    .strike-line {
+      z-index: 2;
+    }
+
     .field {
       position: absolute;
       font-size: 18px;
@@ -377,6 +395,7 @@
 
     <main class="preview-wrap">
       <section class="page" id="page">
+        <img src="base.jpg" class="base-img" alt="">
         <div id="out_sesso_alunno" class="suffix"></div>
         <div id="out_sesso_ammesso" class="suffix"></div>
         <div id="out_sesso_nonammesso" class="suffix"></div>
