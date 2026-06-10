@@ -153,6 +153,30 @@
       font-size: 16px;
     }
 
+
+    .suffix {
+      position: absolute;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: normal;
+      white-space: nowrap;
+    }
+
+    .strike-line {
+      position: absolute;
+      height: 2px;
+      background: #000;
+      transform: rotate(-8deg);
+      transform-origin: left center;
+      display: none;
+      pointer-events: none;
+    }
+
+    #out_sesso_alunno { left: 101px; top: 245px; width: 25px; }
+    #out_sesso_ammesso { left: 166px; top: 925px; width: 25px; }
+    #out_sesso_nonammesso { left: 166px; top: 1088px; width: 25px; }
+    #fsl_line { left: 394px; top: 733px; width: 72px; }
+
     /* Coordinate campi principali */
     #out_alunno { left: 171px; top: 245px; width: 370px; }
     #out_classe { left: 608px; top: 245px; width: 160px; }
@@ -161,7 +185,7 @@
     #out_ore_fsl { left: 395px; top: 726px; width: 70px; }
     #out_contrari { left: 586px; top: 840px; width: 325px; }
     #out_alunno_delibera { left: 209px; top: 882px; width: 715px; }
-    #out_credito { left: 725px; top: 925px; width: 50px; }
+    #out_credito { left: 729px; top: 925px; width: 50px; }
     #out_disciplina { left: 595px; top: 989px; width: 255px; }
     #out_motivazioni { left: 325px; top: 1009px; width: 600px; height: 45px; }
     #out_data { left: 140px; top: 1130px; width: 260px; }
@@ -224,6 +248,14 @@
       <label>Alunno/a
         <input id="alunno" type="text" oninput="aggiorna()" />
       </label>
+
+      <label>Sesso grammaticale
+        <select id="sesso" onchange="aggiorna()">
+          <option value="">-- scegli --</option>
+          <option value="o">Maschile: o</option>
+          <option value="a">Femminile: a</option>
+        </select>
+      </label>
       <label>Classe
         <input id="classe" type="text" oninput="aggiorna()" />
       </label>
@@ -274,6 +306,13 @@
           <option value="">-- scegli --</option>
           <option>SI</option>
           <option>NO</option>
+        </select>
+      </label>
+
+      <label>FSL
+        <select id="fsl_applica" onchange="aggiorna()">
+          <option value="si">Indicare numero ore</option>
+          <option value="no">Annulla campo con linea</option>
         </select>
       </label>
 
@@ -338,6 +377,10 @@
 
     <main class="preview-wrap">
       <section class="page" id="page">
+        <div id="out_sesso_alunno" class="suffix"></div>
+        <div id="out_sesso_ammesso" class="suffix"></div>
+        <div id="out_sesso_nonammesso" class="suffix"></div>
+        <div id="fsl_line" class="strike-line"></div>
         <div id="out_alunno" class="field"></div>
         <div id="out_classe" class="field"></div>
         <div id="out_sez" class="field"></div>
@@ -468,10 +511,21 @@
     }
 
     function aggiorna() {
+      const sesso = val("sesso");
+      setText("out_sesso_alunno", sesso);
+      setText("out_sesso_ammesso", sesso);
+      setText("out_sesso_nonammesso", sesso);
+
       setText("out_alunno", val("alunno"));
       setText("out_classe", val("classe"));
       setText("out_sez", val("sez"));
-      setText("out_ore_fsl", val("ore_fsl"));
+      if (val("fsl_applica") === "no") {
+        setText("out_ore_fsl", "");
+        document.getElementById("fsl_line").style.display = "block";
+      } else {
+        setText("out_ore_fsl", val("ore_fsl"));
+        document.getElementById("fsl_line").style.display = "none";
+      }
       setText("out_contrari", val("contrari"));
       setText("out_alunno_delibera", val("alunno"));
       setText("out_credito", val("credito"));
